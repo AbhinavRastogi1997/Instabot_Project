@@ -194,9 +194,27 @@ def list_of_comments(username):
     else:
         print("Status code other than 200 was received.")
 
+def comment_on_post(username):
+
+    media_id=get_media_id(username)
+    if media_id==None:
+        print("There are no posts")
+        exit()
+
+    request_url=Base_URL+"media/%s/comments"%(media_id)
+    comment_text=raw_input("Enter your comment")
+    payload={"access_token":Access_Token,"text":comment_text}
+    print("POST request URL : %s"%(request_url))
+    post_comment=requests.post(request_url,payload)
+
+    if post_comment.status_code==200:
+        print("Comment was successfully added!")
+
+    else:
+        print("Comment could not be added! Try again!")
 
 def start_bot():
-    menu_choices=int(raw_input("What would you like to do?:\n 1.Get your own details. \n 2.Get the details of a user by username. \n 3.Fetch your own post \n 4.Fetch your friend's post. \n 5.Get like list \n 6.Like the post of a user \n 7.Get the list of comments on the recent post of a user" ))
+    menu_choices=int(raw_input("What would you like to do?:\n 1.Get your own details. \n 2.Get the details of a user by username. \n 3.Fetch your own post \n 4.Fetch your friend's post. \n 5.Get like list \n 6.Like the post of a user \n 7.Get the list of comments on the recent post of a user \n 8.Comment on a user's post" ))
 
     if menu_choices==1:
         self_info()
@@ -225,4 +243,8 @@ def start_bot():
     if menu_choices==7:
         username=raw_input(("Enter the username:"))
         list_of_comments(username)
+
+    if menu_choices==8:
+        username=raw_input("Enter the username")
+        comment_on_post(username)
 start_bot()
