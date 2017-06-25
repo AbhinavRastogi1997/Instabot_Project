@@ -2,7 +2,7 @@
 
 import requests, urllib  # importing requests and urllib modules
 
-Access_Token = "5629236876.1cc9688.86db895c038043b5960dc2949785299a"  # Access token for accessing the Instagram API
+Access_Token = "3730820004.c61c48c.92fc2ab8afe1473389f9f9f0dc9f48b6"  # Access token for accessing the Instagram API
 
 Base_URL = "https://api.instagram.com/v1/"  # Base URL for various API Endpoints
 
