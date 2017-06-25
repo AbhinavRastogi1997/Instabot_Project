@@ -1,6 +1,8 @@
-import requests,urllib
-Access_Token="3730820004.c61c48c.92fc2ab8afe1473389f9f9f0dc9f48b6"
+import requests,urllib,googlemaps
+API_KEY="AIzaSyAWPbciqG7n3pDhxPV0Twdg7bHWtAuct8M"
+Access_Token="5629236876.1cc9688.86db895c038043b5960dc2949785299a"
 Base_URL = "https://api.instagram.com/v1/"
+Base_URL2="https://maps.googleapis.com/maps/api/geocode/json"
 print("Hello!")
 print("Welcome to Instabot!")
 print("Let's Get Started!!")
@@ -213,8 +215,51 @@ def comment_on_post(username):
     else:
         print("Comment could not be added! Try again!")
 
+def analyse_the_geographical_coordinate():
+    address=raw_input("Enter the location:")
+    request_url = Base_URL2+"?address=%s&key=%s"%(address,API_KEY)
+    print("GET request URL : %s"%(request_url))
+    location=requests.get(request_url).json()
+
+    Latitude=location['results'][0]['geometry']['location']["lat"]
+    Longitude=location['results'][0]['geometry']['location']["lng"]
+    print("Latitude:%s"%(Latitude))
+    print("Longitude:%s"%(Longitude))
+
+    req_url=Base_URL+"locations/search?lat=%s&lng=%s&access_token=%s"%(Latitude,Longitude,Access_Token)
+    print("GET request URL : %s"%(req_url))
+    location_info=requests.get(req_url).json()
+
+    for item in range(0,len(location_info['data'])):
+        id=location_info['data'][item]['id']
+        REQUEST_URL=Base_URL+"locations/%s/media/recent?access_token=%s"%(id,Access_Token)
+        location_media=requests.get(REQUEST_URL).json()
+        if location_media['meta']['code']==200:
+            if len(location_media['data']):
+                if location_media['data'][0]['tags'].Upper()=="Earthquake":
+                    print("Detected! Natural Calamity:Earthquake")
+                elif location_media['data'][0]['tags'].Upper()=="Floods":
+                    print("Detected! Natural Calamity:Flood")
+                elif location_media['data'][0]['tags'].Upper()=="Drought":
+                    print("Detected! Natural Calamity:Drought")
+                elif location_media['data'][0]['tags'].Upper()=="Landslide":
+                    print("Detected! Natural Calamity:Landslide")
+                elif location_media['data'][0]['tags'].Upper()=="Tsunami":
+                    print("Detected! Natural Calamity:Tsunami")
+                else:
+                    print("No Natural Calamity was detected at this place")
+
+            else:
+                print("There are no posts for thi sparticular location")
+
+        else:
+            print("Status code other than 200 was received!")
+
+
+
+
 def start_bot():
-    menu_choices=int(raw_input("What would you like to do?:\n 1.Get your own details. \n 2.Get the details of a user by username. \n 3.Fetch your own post \n 4.Fetch your friend's post. \n 5.Get like list \n 6.Like the post of a user \n 7.Get the list of comments on the recent post of a user \n 8.Comment on a user's post" ))
+    menu_choices=int(raw_input("What would you like to do?:\n 1.Get your own details. \n 2.Get the details of a user by username. \n 3.Fetch your own post \n 4.Fetch your friend's post. \n 5.Get like list \n 6.Like the post of a user \n 7.Get the list of comments on the recent post of a user \n 8.Comment on a user's post \n 9. Analyse various geographical coordinates and check whether a natural calamity took place in that region." ))
 
     if menu_choices==1:
         self_info()
@@ -247,4 +292,7 @@ def start_bot():
     if menu_choices==8:
         username=raw_input("Enter the username")
         comment_on_post(username)
+
+    if menu_choices==9:
+        analyse_the_geographical_coordinate()
 start_bot()
